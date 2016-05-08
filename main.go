@@ -22,6 +22,7 @@ func main() {
 	req.scheme = "http"
 	req.host = os.Getenv("REQ_HOST")
 	req.path = splitPath(os.Getenv("REQ_PATH"))
+	req.format = os.Getenv("REQ_FORMAT")
 
 	if len(os.Args) <= 2 {
 		fmt.Println("Usage: req [--host] [--path] [--header] [--auth] [--verbose] [--scheme] <method> <path> [<path> ...] [--] [<key>=<value> ...]")
@@ -80,6 +81,18 @@ func parseArgs(args []string, req *request) (err error) {
 				}
 				req.host = args[n+1]
 				state = -1
+			case "--format":
+				if len(args) < n+1 {
+					return errors.New("no --format value")
+				}
+				f := args[n+1]
+				switch f {
+				case "json", "form":
+					req.format = f
+				default:
+					return fmt.Errorf("unknown format %q", f)
+				}
+				state = -1
 			case "--path":
 				if len(args) < n+1 {
 					return errors.New("no --path value")
@@ -124,6 +137,8 @@ func parseArgs(args []string, req *request) (err error) {
 			}
 			if strings.HasPrefix(value, "@") {
 				req.file[key] = strings.TrimPrefix(value, "@")
+			} else if req.format != "" && req.format != "json" {
+				req.body[key] = value
 			} else {
 				value = wrapString(value)
 				var v interface{}
@@ -147,6 +162,7 @@ type request struct {
 	body   map[string]interface{}
 	head   url.Values
 	debug  bool
+	format string
 }
 
 func newRequest() *request {
@@ -191,6 +207,9 @@ func (req *request) reader() (_ io.Reader, err error) {
 	if len(req.body) == 0 || req.method == "GET" {
 		return
 	}
+	if req.format == "form" {
+		return req.formReader()
+	}
 	body := new(bytes.Buffer)
 	err = json.NewEncoder(body).Encode(req.body)
 	if err != nil {
@@ -198,6 +217,15 @@ func (req *request) reader() (_ io.Reader, err error) {
 	}
 	req.head.Set("Content-Type", "application/json")
 	return body, nil
+}
+
+func (req *request) formReader() (_ io.Reader, err error) {
+	data := make(url.Values)
+	for key, value := range req.body {
+		data.Set(key, fmt.Sprintf("%v", value))
+	}
+	req.head.Set("Content-Type", "application/x-www-form-urlencoded")
+	return strings.NewReader(data.Encode()), nil
 }
 
 func (req *request) mimeReader() (_ io.Reader, err error) {
