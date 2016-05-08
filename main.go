@@ -286,7 +286,7 @@ func wrapString(s string) string {
 		return s
 	}
 	for _, r := range s {
-		if unicode.IsPunct(r) || unicode.IsLetter(r) {
+		if unicode.IsLetter(r) || unicode.IsPunct(r) && r != '.' {
 			return fmt.Sprintf("%q", s)
 		}
 	}
