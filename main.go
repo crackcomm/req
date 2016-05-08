@@ -111,7 +111,11 @@ func parseArgs(args []string, req *request) (err error) {
 			if arg == "--" {
 				state = 2
 			} else {
-				req.path = append(req.path, arg)
+				if req.host == "" {
+					req.host = arg
+				} else {
+					req.path = append(req.path, arg)
+				}
 			}
 		case 2:
 			key, value, ok := splitKV(arg, "=")

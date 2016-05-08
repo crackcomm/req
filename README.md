@@ -29,6 +29,9 @@ $ req put pkg example -- repository=git@github.com:username/repo.git description
   }
 }
 
+# Request with hostname ($REQ_HOST must be empty)
+$ req get google.com
+
 # File upload
 $ req put pkg example -- archive=@package.zip description="Example movies database"
 
