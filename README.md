@@ -42,14 +42,7 @@ GET /v1/me HTTP/1.1
 Host: api.tower.pro
 ...
 
-# Create API client
-$ alias myapi="req --host api.tower.pro --path v1"
-
-# GET /v1/me
-# Host: api.tower.pro
-$ myapi get me
-
-# etcd API client
+# Create etcd API client
 $ alias etcdctl="req --host etcd --path v2/keys --format form"
 
 # GET /v2/keys/foo
