@@ -8,7 +8,7 @@ $ export REQ_HOST=api.tower.pro
 $ export REQ_PATH=v1 # default path prefix
 
 # GET /v1/example/movies/search?title=Pulp+Fiction
-# Host: api.tower.pro
+# Host: $REQ_HOST
 $ req get example movies search -- title="Pulp Fiction"
 {
   "title": "Pulp Fiction",
@@ -16,7 +16,7 @@ $ req get example movies search -- title="Pulp Fiction"
 }
 
 # PUT /v1/pkg/example
-# Host: api.tower.pro
+# Host: $REQ_HOST
 #
 # {"repository": "git@github.com:username/repo.git", "description": "Example movies database"}
 $ req put pkg example -- repository=git@github.com:username/repo.git description="Example movies database"
@@ -39,7 +39,7 @@ $ req put pkg example -- archive=@package.zip description="Example movies databa
 # Choose one from: [-v, --verbose, -d, -debug]
 $ req -v get me
 GET /v1/me HTTP/1.1
-Host: api.tower.pro
+Host: $REQ_HOST
 ...
 
 # Create etcd API client
