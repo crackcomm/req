@@ -2,6 +2,14 @@
 
 HTTP services client
 
+## Install
+
+```sh
+$ go get -u github.com/crackcomm/req
+```
+
+## Usage
+
 ```sh
 # Setting request defaults
 $ export REQ_HOST=api.tower.pro
